@@ -65,7 +65,8 @@ opencode-mcp/
 │   │   │   ├── generate-config-snippet.ts
 │   │   │   ├── explain-config-option.ts
 │   │   │   └── get-config-examples.ts
-│   │   └── utilities/               # Helper tools (4 tools)
+│   │   └── utilities/               # Helper tools (5 tools)
+│   │       ├── update-models-dev-data.ts
 │   │       ├── get-env-var-template.ts
 │   │       ├── check-requirements.ts
 │   │       ├── troubleshoot-config.ts
@@ -95,8 +96,10 @@ opencode-mcp/
 **Update Strategy**:
 - Bundle `models-dev-api.json` in repository
 - Load from local file on startup (fast, no network dependency)
-- Provide `refresh-models-data` tool to update on demand
-- Graceful fallback to bundled version if fetch fails
+- **IMPORTANT**: Never fetch directly via webfetch (5MB response will blow context window)
+- MCP server checks file modification time on startup
+- If data is older than 24 hours, automatically updates via `curl` subprocess
+- Manual update available via `update-models-dev-data` tool
 
 **Data Structure**:
 ```typescript
@@ -698,9 +701,34 @@ opencode-mcp/
 
 ### Category 4: Utilities
 
-**Total**: 4 tools
+**Total**: 5 tools
 
-#### 4.1 `get-env-var-template`
+#### 4.1 `update-models-dev-data`
+**Purpose**: Update the bundled models.dev data file
+
+**Input Schema**:
+```json
+{
+  "type": "object",
+  "properties": {
+    "force": {
+      "type": "boolean",
+      "description": "Force update even if data is recent",
+      "default": false
+    }
+  }
+}
+```
+
+**Output**: Success/failure message with stats (number of providers, file size, last update time)
+
+**Implementation**: 
+- Uses `curl` subprocess to download (never webfetch)
+- Checks file modification time before updating
+- Creates backup before overwriting
+- Validates JSON after download
+
+#### 4.2 `get-env-var-template`
 **Purpose**: Generate .env template from current config
 
 **Input Schema**:
@@ -777,10 +805,10 @@ opencode-mcp/
    - **Models.dev**: 8 tools (all from Category 1)
    - **MCP Registry**: 7 tools (all from Category 2)
    - **Config**: 3 tools (read-config, validate-config, generate-config-snippet)
-   - **Utilities**: 2 tools (get-env-var-template, troubleshoot-config)
+   - **Utilities**: 3 tools (update-models-dev-data, get-env-var-template, troubleshoot-config)
 
 **Deliverables**:
-- Working MCP server with 20 tools
+- Working MCP server with 21 tools
 - Can be added to OpenCode
 - Basic documentation
 
@@ -800,7 +828,7 @@ opencode-mcp/
 5. Polish documentation
 
 **Deliverables**:
-- 25 total tools
+- 26 total tools
 - Production-ready quality
 - Full documentation
 - Test coverage
@@ -891,7 +919,7 @@ User gets MCP config to add to opencode.json ✅
 ## Success Metrics
 
 ### Phase 1 Success Criteria
-- [ ] All 20 Phase 1 tools implemented
+- [ ] All 21 Phase 1 tools implemented
 - [ ] Successfully loads models.dev data
 - [ ] Successfully fetches from MCP registry
 - [ ] Can read OpenCode config files
@@ -899,7 +927,7 @@ User gets MCP config to add to opencode.json ✅
 - [ ] Basic error handling in place
 
 ### Phase 2 Success Criteria
-- [ ] All 25 tools implemented
+- [ ] All 26 tools implemented
 - [ ] Comprehensive error handling
 - [ ] Full documentation
 - [ ] Published to npm (optional)

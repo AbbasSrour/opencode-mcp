@@ -80,7 +80,9 @@ Add to your `opencode.json`:
 ## Data Sources
 
 - **models.dev API** - Comprehensive AI model database
-- **MCP Registry** - Official Model Context Protocol server registry
+  - Automatically checks for updates on startup (if data > 24 hours old)
+  - Manual update via `update-models-dev-data` tool
+- **MCP Registry** - Official Model Context Protocol server registry (live API)
 - **OpenCode Schema** - OpenCode configuration schema
 
 ## License
