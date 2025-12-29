@@ -71,7 +71,6 @@ opencode-mcp/
 │   │       ├── troubleshoot-config.ts
 │   │       └── optimize-config.ts
 │   └── utils/
-│       ├── cache.ts                 # Simple cache for MCP registry
 │       ├── config-parser.ts         # JSON/JSONC parsing
 │       ├── validation.ts            # Schema validation
 │       └── formatting.ts            # Output formatting
@@ -127,7 +126,6 @@ opencode-mcp/
 **Source**: https://registry.modelcontextprotocol.io/v0.1/servers  
 **Update Strategy**:
 - Fetch live data on-demand (no bundling needed)
-- Cache responses for 1 hour to reduce API calls
 - Pagination: 30 servers per page with cursor-based pagination
 
 **Data Structure**:
@@ -166,7 +164,7 @@ opencode-mcp/
 **Source**: https://opencode.ai/config.json (if available)  
 **Update Strategy**:
 - Bundle fallback schema in repository
-- Fetch from URL on startup (cached)
+- Fetch from URL on startup with fallback to bundled version
 - Use for validation and documentation
 
 ---
@@ -797,10 +795,9 @@ opencode-mcp/
 **Tasks**:
 1. Complete config management (3 remaining tools)
 2. Complete utilities (2 remaining tools)
-3. Add caching layer for MCP registry
-4. Improve error handling
-5. Add comprehensive tests
-6. Polish documentation
+3. Improve error handling
+4. Add comprehensive tests
+5. Polish documentation
 
 **Deliverables**:
 - 25 total tools
@@ -903,7 +900,6 @@ User gets MCP config to add to opencode.json ✅
 
 ### Phase 2 Success Criteria
 - [ ] All 25 tools implemented
-- [ ] Response caching implemented
 - [ ] Comprehensive error handling
 - [ ] Full documentation
 - [ ] Published to npm (optional)
@@ -918,9 +914,9 @@ User gets MCP config to add to opencode.json ✅
 - Fallback to bundled data when network fails
 
 ### Performance
-- Cache MCP registry responses (1 hour TTL)
 - Lazy load models.dev data
 - Optimize search algorithms
+- Efficient pagination for MCP registry queries
 
 ### Security
 - No sensitive data in logs
