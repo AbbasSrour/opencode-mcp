@@ -41,13 +41,10 @@ opencode-mcp/
 │   │   ├── mcp-registry-client.ts   # Fetch from official registry
 │   │   └── schema-loader.ts         # OpenCode schema
 │   ├── tools/
-│   │   ├── models/                  # models.dev tools (8 tools)
+│   │   ├── models/                  # models.dev tools (5 tools)
 │   │   │   ├── list-providers.ts
 │   │   │   ├── search-models.ts
 │   │   │   ├── get-model-details.ts
-│   │   │   ├── compare-models.ts
-│   │   │   ├── recommend-models.ts
-│   │   │   ├── calculate-cost.ts
 │   │   │   ├── generate-provider-config.ts
 │   │   │   └── get-provider-setup-guide.ts
 │   │   ├── mcp-registry/            # MCP registry tools (7 tools)
@@ -176,7 +173,7 @@ opencode-mcp/
 
 ### Category 1: Models & Providers (models.dev)
 
-**Total**: 8 tools
+**Total**: 5 tools
 
 #### 1.1 `list-providers`
 **Purpose**: List all available AI providers from models.dev
@@ -274,87 +271,7 @@ opencode-mcp/
 
 **Output**: Full model specification with all metadata
 
-#### 1.4 `compare-models`
-**Purpose**: Side-by-side comparison of multiple models
-
-**Input Schema**:
-```json
-{
-  "type": "object",
-  "properties": {
-    "model_ids": {
-      "type": "array",
-      "items": { "type": "string" },
-      "description": "Array of model identifiers to compare",
-      "minItems": 2
-    }
-  },
-  "required": ["model_ids"]
-}
-```
-
-**Output**: Comparison table with pricing, capabilities, limits
-
-#### 1.5 `recommend-models`
-**Purpose**: Get model recommendations based on use case
-
-**Input Schema**:
-```json
-{
-  "type": "object",
-  "properties": {
-    "use_case": {
-      "type": "string",
-      "enum": ["general-coding", "cost-effective", "long-context", "vision", "reasoning", "fastest"],
-      "description": "Primary use case"
-    },
-    "budget": {
-      "type": "number",
-      "description": "Maximum cost per million output tokens"
-    },
-    "min_context": {
-      "type": "number",
-      "description": "Minimum context window needed"
-    }
-  },
-  "required": ["use_case"]
-}
-```
-
-**Output**: Top 3-5 recommended models with rationale
-
-#### 1.6 `calculate-cost`
-**Purpose**: Estimate costs for token usage
-
-**Input Schema**:
-```json
-{
-  "type": "object",
-  "properties": {
-    "model_id": {
-      "type": "string",
-      "description": "Model to calculate for"
-    },
-    "input_tokens": {
-      "type": "number",
-      "description": "Number of input tokens"
-    },
-    "output_tokens": {
-      "type": "number",
-      "description": "Number of output tokens"
-    },
-    "cached_tokens": {
-      "type": "number",
-      "description": "Number of cached tokens (optional)"
-    }
-  },
-  "required": ["model_id", "input_tokens", "output_tokens"]
-}
-```
-
-**Output**: Cost breakdown and total in USD
-
-#### 1.7 `generate-provider-config`
+#### 1.4 `generate-provider-config`
 **Purpose**: Generate OpenCode provider configuration
 
 **Input Schema**:
@@ -382,7 +299,7 @@ opencode-mcp/
 
 **Output**: JSON configuration snippet for opencode.json
 
-#### 1.8 `get-provider-setup-guide`
+#### 1.5 `get-provider-setup-guide`
 **Purpose**: Get setup instructions for a provider
 
 **Input Schema**:
@@ -803,13 +720,13 @@ opencode-mcp/
    - MCP registry client
    - Config file reader
 5. Implement tools:
-   - **Models.dev**: 8 tools (all from Category 1)
+   - **Models.dev**: 5 tools (all from Category 1)
    - **MCP Registry**: 7 tools (all from Category 2)
    - **Config**: 3 tools (read-config, validate-config, generate-config-snippet)
    - **Utilities**: 3 tools (update-models-dev-data, get-env-var-template, troubleshoot-config)
 
 **Deliverables**:
-- Working MCP server with 21 tools
+- Working MCP server with 18 tools
 - Can be added to OpenCode
 - Basic documentation
 
@@ -829,7 +746,7 @@ opencode-mcp/
 5. Polish documentation
 
 **Deliverables**:
-- 26 total tools
+- 23 total tools
 - Production-ready quality
 - Full documentation
 - Test coverage
@@ -886,10 +803,9 @@ Assistant uses: search-models {
   capabilities: ["tool_call"],
   sort_by: "cost_output"
 }
+→ Returns list of matching models
 
-Assistant uses: compare-models {
-  model_ids: ["top-3-from-search"]
-}
+User: "I'll go with Claude Haiku"
 
 Assistant uses: generate-provider-config {
   provider_id: "anthropic",
@@ -920,7 +836,7 @@ User gets MCP config to add to opencode.json ✅
 ## Success Metrics
 
 ### Phase 1 Success Criteria
-- [ ] All 21 Phase 1 tools implemented
+- [ ] All 18 Phase 1 tools implemented
 - [ ] Successfully loads models.dev data
 - [ ] Successfully fetches from MCP registry
 - [ ] Can read OpenCode config files
@@ -928,7 +844,7 @@ User gets MCP config to add to opencode.json ✅
 - [ ] Basic error handling in place
 
 ### Phase 2 Success Criteria
-- [ ] All 26 tools implemented
+- [ ] All 23 tools implemented
 - [ ] Comprehensive error handling
 - [ ] Full documentation
 - [ ] Published to npm (optional)
