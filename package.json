@@ -1,0 +1,37 @@
+{
+  "name": "opencode-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for discovering, configuring, and managing OpenCode setup with models.dev and MCP registry integration",
+  "main": "dist/index.js",
+  "type": "module",
+  "bin": {
+    "opencode-mcp": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts",
+    "watch": "tsc --watch",
+    "prepare": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "opencode",
+    "ai-models",
+    "models.dev",
+    "mcp-registry"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
