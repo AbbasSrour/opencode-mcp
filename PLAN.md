@@ -96,9 +96,9 @@ opencode-mcp/
 **Update Strategy**:
 - Bundle `models-dev-api.json` in repository
 - Load from local file on startup (fast, no network dependency)
-- **IMPORTANT**: Never fetch directly via webfetch (5MB response will blow context window)
+- **IMPORTANT**: Never fetch in MCP tools (5MB response will blow context window)
 - MCP server checks file modification time on startup
-- If data is older than 24 hours, automatically updates via `curl` subprocess
+- If data is older than 24 hours, automatically updates using Node.js `fetch`
 - Manual update available via `update-models-dev-data` tool
 
 **Data Structure**:
@@ -723,10 +723,11 @@ opencode-mcp/
 **Output**: Success/failure message with stats (number of providers, file size, last update time)
 
 **Implementation**: 
-- Uses `curl` subprocess to download (never webfetch)
+- Uses Node.js built-in `fetch` to download
 - Checks file modification time before updating
 - Creates backup before overwriting
 - Validates JSON after download
+- **Note**: This runs in the MCP server process, not as an MCP tool response (to avoid context window issues)
 
 #### 4.2 `get-env-var-template`
 **Purpose**: Generate .env template from current config
