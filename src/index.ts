@@ -7,6 +7,11 @@ import {
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 
+// Import tool definitions and registry
+import { ALL_TOOLS } from "./tool-schemas.js";
+import { executeTool } from "./tool-registry.js";
+import { SERVER_NAME, SERVER_VERSION } from "./constants.js";
+
 /**
  * OpenCode MCP Server
  * 
@@ -16,8 +21,8 @@ import {
 
 const server = new Server(
   {
-    name: "opencode-mcp",
-    version: "0.1.0",
+    name: SERVER_NAME,
+    version: SERVER_VERSION,
   },
   {
     capabilities: {
@@ -31,22 +36,7 @@ const server = new Server(
  */
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
-    tools: [
-      {
-        name: "hello",
-        description: "A simple test tool that returns a greeting",
-        inputSchema: {
-          type: "object",
-          properties: {
-            name: {
-              type: "string",
-              description: "Name to greet",
-            },
-          },
-          required: ["name"],
-        },
-      },
-    ],
+    tools: ALL_TOOLS,
   };
 });
 
@@ -56,21 +46,34 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
 
-  switch (name) {
-    case "hello": {
-      const nameArg = args?.name as string;
-      return {
-        content: [
-          {
-            type: "text",
-            text: `Hello, ${nameArg}! OpenCode MCP Server is running.`,
-          },
-        ],
-      };
-    }
+  try {
+    console.error(`[${SERVER_NAME}] Executing tool: ${name}`);
+    const result = await executeTool(name, args);
 
-    default:
-      throw new Error(`Unknown tool: ${name}`);
+    return {
+      content: [
+        {
+          type: "text",
+          text: result,
+        },
+      ],
+    };
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const errorStack = error instanceof Error ? error.stack : undefined;
+    console.error(`[${SERVER_NAME}] Error executing tool ${name}:`, errorMessage);
+    if (errorStack) {
+      console.error(`[${SERVER_NAME}] Stack trace:`, errorStack);
+    }
+    return {
+      content: [
+        {
+          type: "text",
+          text: `Error: ${errorMessage}`,
+        },
+      ],
+      isError: true,
+    };
   }
 });
 
@@ -78,12 +81,20 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
  * Start the server
  */
 async function main() {
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
-  console.error("OpenCode MCP Server running on stdio");
+  try {
+    console.error(`[${SERVER_NAME}] Starting server...`);
+    const transport = new StdioServerTransport();
+    await server.connect(transport);
+    console.error(`[${SERVER_NAME}] Server running on stdio`);
+    console.error(`[${SERVER_NAME}] Ready to accept requests`);
+  } catch (error) {
+    console.error(`[${SERVER_NAME}] Failed to start server:`, error);
+    throw error;
+  }
 }
 
 main().catch((error) => {
-  console.error("Fatal error in main():", error);
+  console.error(`[${SERVER_NAME}] Fatal error in main():`, error);
+  console.error(`[${SERVER_NAME}] Stack trace:`, error instanceof Error ? error.stack : "No stack trace");
   process.exit(1);
 });

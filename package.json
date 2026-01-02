@@ -24,7 +24,8 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.4"
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "jsonc-parser": "^3.3.1"
   },
   "devDependencies": {
     "@types/node": "^22.10.5",
